@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Fpuzzles-FOW
-// @version      1.0
+// @version      1.1
 // @description  Adds the Fog of War Bulb constraint to f-puzzles.
 // @author       Chameleon
 // @updateURL    https://github.com/yusitnikov/fpuzzles-fow-bulb/raw/main/fpuzzles-fow-bulb.user.js
