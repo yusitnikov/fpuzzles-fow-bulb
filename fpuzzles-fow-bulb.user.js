@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Fpuzzles-FOW
-// @version      1.1
+// @version      1.2
 // @description  Adds the Fog of War Bulb constraint to f-puzzles.
 // @author       Chameleon
 // @updateURL    https://github.com/yusitnikov/fpuzzles-fow-bulb/raw/main/fpuzzles-fow-bulb.user.js
@@ -15,6 +15,36 @@
     const name = 'Fog of War Bulb';
 
     const doShim = () => {
+        const origExportPuzzle = exportPuzzle;
+        exportPuzzle = function(includeCandidates) {
+            const compressed = origExportPuzzle(includeCandidates);
+            const puzzle = JSON.parse(compressor.decompressFromBase64(compressed));
+
+            if (puzzle[id]) {
+                if (puzzle[id].length) {
+                    puzzle.fogofwar = {cells: puzzle[id].map(({cell}) => cell)};
+                }
+                delete puzzle[id];
+            }
+
+            return compressor.compressToBase64(JSON.stringify(puzzle));
+        }
+
+        const origImportPuzzle = importPuzzle;
+        importPuzzle = function(string, clearHistory) {
+            const puzzle = JSON.parse(compressor.decompressFromBase64(string));
+
+            if (puzzle.fogofwar) {
+                if (puzzle.fogofwar.cells && puzzle.fogofwar.cells.length) {
+                    puzzle[id] = puzzle.fogofwar.cells.map(cell => ({cell}));
+                }
+                delete puzzle.fogofwar;
+            }
+
+            string = compressor.compressToBase64(JSON.stringify(puzzle));
+            origImportPuzzle(string, clearHistory);
+        }
+
         const origDrawConstraints = drawConstraints;
         drawConstraints = (...args) => {
             origDrawConstraints(...args);
@@ -62,6 +92,8 @@
 
     const intervalId = setInterval(() => {
         if (typeof grid === 'undefined' ||
+            typeof exportPuzzle === 'undefined' ||
+            typeof importPuzzle === 'undefined' ||
             typeof drawConstraints === 'undefined' ||
             typeof categorizeTools === 'undefined') {
             return;
