@@ -22,7 +22,7 @@
 
             if (puzzle[id]) {
                 if (puzzle[id].length) {
-                    puzzle.fogofwar = {cells: puzzle[id].map(({cell}) => cell)};
+                    puzzle.fogofwar = puzzle[id].map(({cell}) => cell);
                 }
                 delete puzzle[id];
             }
