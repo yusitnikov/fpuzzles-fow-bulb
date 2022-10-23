@@ -22,7 +22,7 @@
 
             if (puzzle[id]) {
                 if (puzzle[id].length) {
-                    puzzle.fogofwar = {cells: puzzle[id].map(({cell}) => cell)};
+                    puzzle.fogofwar = puzzle[id].map(({cell}) => cell);
                 }
                 delete puzzle[id];
             }
@@ -35,8 +35,8 @@
             const puzzle = JSON.parse(compressor.decompressFromBase64(string));
 
             if (puzzle.fogofwar) {
-                if (puzzle.fogofwar.cells && puzzle.fogofwar.cells.length) {
-                    puzzle[id] = puzzle.fogofwar.cells.map(cell => ({cell}));
+                if (Array.isArray(puzzle.fogofwar)) {
+                    puzzle[id] = puzzle.fogofwar.map(cell => ({cell}));
                 }
                 delete puzzle.fogofwar;
             }
